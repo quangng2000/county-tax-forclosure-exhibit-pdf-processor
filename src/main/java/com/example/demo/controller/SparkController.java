@@ -36,6 +36,13 @@ public class SparkController {
 
         return webService.webScrapping();
     }
+	@RequestMapping(method = RequestMethod.GET, path = "/load")
+	public String loadController() {
+        
+		
+
+        return webService.htmlService();
+    }
 	
 	
 

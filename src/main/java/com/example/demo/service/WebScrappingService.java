@@ -64,17 +64,19 @@ public class WebScrappingService {
 		return characteristics; 
 	}
 	
-	public String htmlService() {
+	public Map<String, String> htmlService(String PIN) {
+		
+		Map<String, String> characteristics = new HashMap<>();
 		
 		try (WebClient webClient = new WebClient()) {
-            // Disable JavaScript to speed up page loading (optional)
-            webClient.getOptions().setJavaScriptEnabled(false);
+            
 
             // Fetch the web page
             webClient.getOptions().setJavaScriptEnabled(false);
-
+            String baseURL = "https://ssc.sedgwickcounty.org/propertytax/disclaimer.aspx?returnURL=/propertytax/realproperty.aspx%3fpin%3d";
+             
             // Fetch the web page
-            HtmlPage page = webClient.getPage("https://ssc.sedgwickcounty.org/propertytax/disclaimer.aspx?returnURL=/propertytax/realproperty.aspx%3fpin%3d00169581");
+            HtmlPage page = webClient.getPage(baseURL+PIN);
 
             HtmlForm form = null;
             for (HtmlForm htmlForm : page.getForms()) {
@@ -122,12 +124,51 @@ public class WebScrappingService {
                 System.out.println("Form not found");
             }
             
-            return result;
+            
+            
+            Document doc = Jsoup.parse(result);
+            
+            Elements tables = doc.select("table.dense.compactTable.compact");
+
+			// Create a map to store the key-value pairs
+			
+
+			// Iterate over the tables
+			for (Element table : tables) {
+			    Elements rows = table.select("tbody tr");
+
+			    // Iterate over the rows and extract the key-value pairs
+			    for (Element row : rows) {
+			        Element keyElement = row.selectFirst("th");
+			        Element valueElement = row.selectFirst("td");
+
+			        if (keyElement != null && valueElement != null) {
+			            String key = keyElement.text();
+			            String value = valueElement.text();
+
+			            if (key.equals("More Details")) {
+			                Element linkElement = valueElement.selectFirst("a");
+			                if (linkElement != null) {
+			                    String hyperlink = linkElement.attr("href");
+			                    value = hyperlink;
+			                }
+			            }
+
+			            characteristics.put(key, value);
+			        }
+			    }
+			}
+            
+            
+            
+            
+           
         } catch (Exception e) {
             e.printStackTrace();
             
-            return "";
+            
         }
+		 return characteristics;
 		
 	}
 	

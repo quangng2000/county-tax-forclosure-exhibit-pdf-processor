@@ -6,8 +6,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.TaxAuctionDto;
 import com.example.demo.service.SparkService;
 import com.example.demo.service.WebScrappingService;
 
@@ -23,7 +25,7 @@ public class SparkController {
 	
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/api")
-	public List<Map<String, String>> sqlController() {
+	public List<TaxAuctionDto> sqlController() {
         
 		
 
@@ -37,11 +39,11 @@ public class SparkController {
         return webService.webScrapping();
     }
 	@RequestMapping(method = RequestMethod.GET, path = "/load")
-	public String loadController() {
+	public Map<String, String> loadController(@RequestParam String PIN) {
         
 		
 
-        return webService.htmlService();
+        return webService.htmlService(PIN);
     }
 	
 	

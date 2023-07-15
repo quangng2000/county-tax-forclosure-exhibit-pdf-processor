@@ -49,5 +49,6 @@ public class TaxAuctionDto {
     private String marketLandSquareFeet;
     private String totalAcres2023;
     private String delinquentYears;
+    private String moreDetails;
     
 }

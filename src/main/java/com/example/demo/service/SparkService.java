@@ -45,10 +45,13 @@ public class SparkService {
 
 	public List<TaxAuctionDto> sparkService() {
 		String inputString = pdfExtract();
-		JavaRDD<String> inputRDD = sc.parallelize(Arrays.asList(inputString.split("PARCEL ")));
+		List<String> inputList = Arrays.asList(inputString.split("PARCEL "));
+		String[] header = inputList.get(0).split("\r\n");
+		header[1] = header[1].substring(1, header[1].length() - 2);
+		JavaRDD<String> inputRDD = sc.parallelize(inputList);
 
-		JavaRDD<Map<String, String>> filteredRDD = inputRDD.map(line -> line.replaceAll("Exhibit A Case 23CV163", ""))
-				.map(line -> line.replaceAll("(Updated 6/5/2023)", "")).filter(line -> !line.contains("REDEEMED ")).filter(line -> !line.contains("DROPPED"))
+		JavaRDD<Map<String, String>> filteredRDD = inputRDD.map(line -> line.replaceAll(header[0], ""))
+				.map(line -> line.replaceAll(header[1], "")).filter(line -> !line.contains("REDEEMED ")).filter(line -> !line.contains("DROPPED"))
 				.filter(line -> !line.contains("REDEMPTION")).map(line -> line.replaceAll("PIN:", ":PIN:"))
 				.map(line -> line.replaceAll("Geocode:", ":Geocode:"))
 				.map(line -> line.replaceAll("Legal Description:", ":Legal Description:"))
@@ -172,7 +175,8 @@ public class SparkService {
 				dto.setMarketLandSquareFeet(data.getOrDefault("Market Land Square Feet", null));
 				dto.setTotalAcres2023(data.getOrDefault("2023 Total Acres", null));
 				dto.setDelinquentYears(data.getOrDefault("Delinquent Years", null));
-
+				dto.setMoreDetails(data.getOrDefault("More Details", null));
+				
 				records.add(dto);
 
 			}
@@ -206,10 +210,11 @@ public class SparkService {
 	}
 
 	public float parseFloat(String value) {
-		System.out.println(value);
+		
 		
 		if(value != null && value.chars().filter(ch -> ch == '.').count() > 1) {
 			value = value.replaceFirst("\\.", "");
+			System.out.println(value);
 		}
 		
 		

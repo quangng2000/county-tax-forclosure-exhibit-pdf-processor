@@ -21,7 +21,7 @@ public class TaxAuctionDto {
     private String owner;
     private Integer assessment2023;
     private String halfBaths;
-    private String geoCode;
+    private String[] geoCode;
     private String landUse;
     private Integer basementSqFt;
     private String mailingAddress;

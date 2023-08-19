@@ -2,13 +2,10 @@ package com.example.demo.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -22,7 +19,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.example.demo.dto.GeoDto;
 import com.example.demo.dto.TaxAuctionDto;
 import com.example.demo.repo.TaxAuctionRepo;
 
@@ -44,6 +43,8 @@ public class SparkService {
 	TaxAuctionRepo repo;
 
 	public List<TaxAuctionDto> sparkService() {
+		RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "https://nominatim.openstreetmap.org/search?format=json&q={address}";
 		String inputString = pdfExtract();
 		List<String> inputList = Arrays.asList(inputString.split("PARCEL "));
 		String[] header = inputList.get(0).split("\r\n");
@@ -160,7 +161,18 @@ public class SparkService {
 				dto.setBasementType(data.getOrDefault("Basement Type", null));
 				dto.setArchitecturalStyle(data.getOrDefault("Architectural Style", null));
 				dto.setCondition(data.getOrDefault("Condition", null));
-				dto.setGeoCode(data.getOrDefault("Geocode", null));
+				String address = data.getOrDefault("Mailing Address", null);
+				
+				GeoDto[] obj = restTemplate.getForObject(apiUrl, GeoDto[].class, formatAddress(address));
+				String[] arr = new String[2];
+				if(obj.length > 0) {
+					 arr[0] =obj[0].getLat();
+					 arr[1] = obj[0].getLon();
+				}
+				
+				
+				
+				dto.setGeoCode(arr);
 				dto.setNumber(data.getOrDefault("NUMBER", null));
 				dto.setAppraisal2023(parseInteger(removeCurrencySymbol(data.getOrDefault("2023 Appraisal", null))));
 				dto.setAin(data.getOrDefault("AIN", null));
@@ -238,5 +250,14 @@ public class SparkService {
 		}
 		return value;
 	}
+	public String formatAddress(String originalAddress) {
+        int lastSpaceIndex = originalAddress.lastIndexOf(" ");
+        if (lastSpaceIndex != -1) {
+            String formattedAddress = originalAddress.substring(0, lastSpaceIndex);
+            return formattedAddress;
+        } else {
+            return originalAddress; // Return original if no space found
+        }
+    }
 
 }

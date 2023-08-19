@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.GeoDto;
 import com.example.demo.dto.TaxAuctionDto;
 import com.example.demo.service.SparkService;
 import com.example.demo.service.WebScrappingService;
@@ -32,19 +33,13 @@ public class SparkController {
         return service.sparkService();
     }
 	@RequestMapping(method = RequestMethod.GET, path = "/extract")
-	public Map<String, String> extractController() {
+	public String extractController() {
         
 		
 
         return webService.webScrapping();
     }
-	@RequestMapping(method = RequestMethod.GET, path = "/load")
-	public Map<String, String> loadController(@RequestParam String PIN) {
-        
-		
-
-        return webService.htmlService(PIN);
-    }
+	
 	
 	
 

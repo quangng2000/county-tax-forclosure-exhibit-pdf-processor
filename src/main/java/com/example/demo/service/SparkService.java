@@ -168,11 +168,16 @@ public class SparkService {
 				if(obj.length > 0) {
 					 arr[0] =obj[0].getLat();
 					 arr[1] = obj[0].getLon();
+				} else {
+					arr[0] = "0";
+					arr[1] = "0";
+					
 				}
 				
 				
 				
-				dto.setGeoCode(arr);
+				dto.setLatitude(Double.parseDouble(arr[0]));
+				dto.setLongitude(Double.parseDouble(arr[1]));
 				dto.setNumber(data.getOrDefault("NUMBER", null));
 				dto.setAppraisal2023(parseInteger(removeCurrencySymbol(data.getOrDefault("2023 Appraisal", null))));
 				dto.setAin(data.getOrDefault("AIN", null));

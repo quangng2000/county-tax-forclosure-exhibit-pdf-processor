@@ -1,0 +1,25 @@
+server:
+  port: 8082
+spark:
+  app:
+    name: Spring Spark Application
+  master: local
+  
+  
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 4
+    password: r9edsXsy
+    url: jdbc:postgresql://rift-kansas.cox1oqv5iiu1.us-east-1.rds.amazonaws.com:5432/rift_kansas
+    username: rift_admin
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+
+    
+
+ 
